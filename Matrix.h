@@ -4,7 +4,6 @@
 #include<iostream>
 #include<thread>
 
-//#include"Define.h"
 #define USE_THREADS 1
 
 template<typename T>
