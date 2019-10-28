@@ -108,8 +108,6 @@ public:
 			unsigned int col = op / res._rows;
 			res.set(row, col, 0);
 			for (unsigned int r = 0; r < res._rows; ++r)
-				//res._matrix[row][col] += _this._matrix[row][r] * matrix._matrix[r][col];
-				//res._matrix[row][col] = res._matrix[row][col] + _this._matrix[row][r] * matrix._matrix[r][col];
 				res.set(row, col, res.get(row, col) + _this.get(row, r) * matrix.get(r, col));
 		}
 	}
@@ -183,9 +181,6 @@ public:
 		for (unsigned int r = 0; r < _rows; r++)
 			for (unsigned int c = 0; c < _cols; c++)
 				res->_insertMatrix(r * matrix->_rows, c * matrix->_cols, matrix->operator*(_matrix[r][c]));
-				//for (unsigned int rM = 0; rM < matrix->_rows; rM++)
-				//	for (unsigned int cM = 0; cM < matrix->_cols; cM++)
-				//		res->_matrix[r * matrix->_rows + rM][c * matrix->_cols + cM] = _matrix[r][c] * matrix->_matrix[rM][cM];
 
 		return res;
 #endif
