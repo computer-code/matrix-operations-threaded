@@ -1,15 +1,8 @@
-#pragma once
-
 #include<bitset>
 #include<iostream>
 #include<thread>
 
 #define MAX_BIT_SIZE 256
-
-#define _Type double
-#define _Complex Complex<_Type>
-#define _Matrix Matrix<_Complex>
-
 #define THREADS_NUMBER 256
 #define USE_THREADS 1
 
@@ -23,13 +16,7 @@ public:
 		_rows = rows;
 		_cols = cols;
 		
-		//_alloc(&_matrix);
 		_matrix = (T*)malloc(_rows * _cols * sizeof(T));
-
-
-		//for (rows = 0; rows < _rows; rows++)
-		//	for (cols = 0; cols < _cols; cols++)
-		//		_matrix[rows][cols] = 0;
 	}
 
 	//Constructor
@@ -38,7 +25,6 @@ public:
 		_rows = rows;
 		_cols = cols;
 		
-		//_alloc(&_matrix);
 		_matrix = (T*)malloc(_rows * _cols * sizeof(T));
 
 		for (rows = 0; rows < _rows; rows++)
@@ -53,15 +39,14 @@ public:
 		_rows = rows;
 		_cols = cols;
 		
-		//_alloc(&_matrix);
 		_matrix = (T*)malloc(_rows * _cols * sizeof(T));
 
 		for (rows = 0; rows < _rows; rows++)
 			for (cols = 0; cols < _cols; cols++)
-				//_matrix[rows][cols] = *(args + (_cols * rows + cols));
 				set(rows, cols, *(args + (_cols * rows + cols)));
 	}
 
+	//Destructor
 	~Matrix<T>()
 	{
 		delete[] _matrix;
@@ -102,7 +87,7 @@ public:
 		return result;
 	}
 
-	inline static void DotProductThread(_Matrix& res, const int threadNumber, _Matrix& _this, _Matrix& matrix)
+	inline static void DotProductThread(Matrix<T>& res, const int threadNumber, Matrix<T>& _this, Matrix<T>& matrix)
 	{
 		unsigned int nElements = res._cols * res._rows;
 		unsigned int nOperations = nElements / THREADS_NUMBER;
@@ -121,7 +106,6 @@ public:
 		for (unsigned int op = startOp; op < endOp; ++op) {
 			unsigned int row = op % res._cols;
 			unsigned int col = op / res._rows;
-			//_matrix[row][col] = 0;
 			res.set(row, col, 0);
 			for (unsigned int r = 0; r < res._rows; ++r)
 				//res._matrix[row][col] += _this._matrix[row][r] * matrix._matrix[r][col];
@@ -130,7 +114,7 @@ public:
 		}
 	}
 
-	inline static void KroneckerProductThread(_Matrix& res, const int threadNumber, _Matrix& _this, _Matrix& matrix)
+	inline static void KroneckerProductThread(Matrix<T>& res, const int threadNumber, Matrix<T>& _this, Matrix<T>& matrix)
 	{
 		for (unsigned int r = 0; r < _this._rows; r++)
 			for (unsigned int c = 0; c < _this._cols; c++)
@@ -154,7 +138,7 @@ public:
 	inline Matrix<T>* DotProduct(Matrix<T>* matrix)
 	{
 #if USE_THREADS
-		_Matrix* res = new _Matrix(_rows, _cols);
+		Matrix<T>* res = new Matrix<T>(_rows, _cols);
 
 		std::thread threads[THREADS_NUMBER];
 		for (unsigned int i = 0; i < THREADS_NUMBER; ++i)
@@ -183,7 +167,7 @@ public:
 	inline Matrix<T>* KroneckerProduct(Matrix<T>* matrix)
 	{
 #if USE_THREADS
-		_Matrix* res = new _Matrix(_rows * matrix->_rows, _cols * matrix->_cols);
+		Matrix<T>* res = new Matrix<T>(_rows * matrix->_rows, _cols * matrix->_cols);
 
 		std::thread threads[THREADS_NUMBER];
 		for (unsigned int i = 0; i < THREADS_NUMBER; ++i)
@@ -211,14 +195,6 @@ private:
 	T* _matrix;
 	unsigned int _rows;
 	unsigned int _cols;
-
-	//TODO with threads
-	void _alloc(T*** matrix)
-	{
-		*matrix = new T * [_rows];
-		for (unsigned int rows = 0; rows < _rows; rows++)
-			(*matrix)[rows] = new T[_cols];
-	}
 
 	void _insertMatrix(unsigned int rPos, unsigned int cPos, Matrix<T>* matrix)
 	{
